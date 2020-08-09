@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>chart</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+<!--The content below is only a placeholder and can be replaced.-->
+<div id="chart">
+  <apx-chart
+    [series]="chartOptions.series"
+    [chart]="chartOptions.chart"
+    [xaxis]="chartOptions.xaxis"
+    [yaxis]="chartOptions.yaxis"
+    [title]="chartOptions.title"
+    [tooltip]="chartOptions.tooltip"
+  ></apx-chart>
+</div>
+
+</ion-content>
