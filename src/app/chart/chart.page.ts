@@ -29,8 +29,10 @@ export class ChartPage implements OnInit {
 
   @ViewChild("chart") chart: ChartComponent;
   public chartOptions: Partial<ChartOptions>;
+  public chartSymbol = 'AAPL';
 
   constructor() {
+    this.chartSymbol = 'AAPL';
     this.chartOptions = {
       series: [
         {
@@ -318,6 +320,13 @@ export class ChartPage implements OnInit {
       i++;
     }
     return series;
+  }
+
+  setSymbol(value: string) {
+    this.chartSymbol = value;
+    console.log('chartSymbol: ', this.chartSymbol);
+
+    return this.chartSymbol;
   }
 
   ngOnInit() {

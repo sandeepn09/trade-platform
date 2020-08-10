@@ -1,20 +1,35 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>chart</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content>
+
+<ion-card>
+  <!-- Segment buttons with text -->
+  <ion-segment [(ngModel)]="chartSymbol" color="secondary">
+    <ion-segment-button value="XLK" >
+      XLK
+    </ion-segment-button>
+    <ion-segment-button value="SPY" >
+      SPY
+    </ion-segment-button>
+  </ion-segment>
+</ion-card>
 <!--The content below is only a placeholder and can be replaced.-->
-<div id="chart">
-  <apx-chart
-    [series]="chartOptions.series"
-    [chart]="chartOptions.chart"
-    [xaxis]="chartOptions.xaxis"
-    [yaxis]="chartOptions.yaxis"
-    [title]="chartOptions.title"
-    [tooltip]="chartOptions.tooltip"
-  ></apx-chart>
-</div>
+
+
+<ion-card>
+  <ion-card-header>
+    {{chartSymbol}}
+  </ion-card-header>
+  <ion-card-content>
+    <div id="chart">
+      <apx-chart
+        [series]="chartOptions.series"
+        [chart]="chartOptions.chart"
+        [xaxis]="chartOptions.xaxis"
+        [yaxis]="chartOptions.yaxis"
+        [title]="chartOptions.title"
+        [tooltip]="chartOptions.tooltip"
+      ></apx-chart>
+    </div>
+  </ion-card-content>
+</ion-card>
 
 </ion-content>
