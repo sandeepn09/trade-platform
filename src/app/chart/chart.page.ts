@@ -1,5 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import * as moment from "moment";
+import {HttpClient} from "@angular/common/http";
+import {Subject, Observable, timer} from 'rxjs';
+import {map} from "rxjs/operators";
+import {interval} from "rxjs/internal/observable/interval";
+import {startWith, switchMap} from "rxjs/operators";
 
 import {
   ChartComponent,
@@ -20,6 +25,9 @@ export type ChartOptions = {
   tooltip: ApexTooltip;
 };
 
+export type candle = {open: Number, high: Number, low: Number, close: Number, volume: Number, datetime: number};
+export type dataElement = {x: Date, y:Number[]};
+
 @Component({
   selector: 'app-chart',
   templateUrl: './chart.page.html',
@@ -30,15 +38,19 @@ export class ChartPage implements OnInit {
   @ViewChild("chart") chart: ChartComponent;
   public chartOptions: Partial<ChartOptions>;
   public chartSymbol = 'AAPL';
+  public quote = {lastPrice:''};
+  
+  
+  candles: candle[];
 
-  constructor() {
+  constructor(private http: HttpClient) {
     this.chartSymbol = 'AAPL';
     this.chartOptions = {
       series: [
         {
           name: "candle",
           data: [
-            {
+            /* {
               x: new Date(1538778600000),
               y: [6629.81, 6650.5, 6623.04, 6633.33]
             },
@@ -277,7 +289,7 @@ export class ChartPage implements OnInit {
             {
               x: new Date(1538884800000),
               y: [6604.98, 6606, 6604.07, 6606]
-            }
+            } */
           ]
         }
       ],
@@ -322,14 +334,48 @@ export class ChartPage implements OnInit {
     return series;
   }
 
-  setSymbol(value: string) {
-    this.chartSymbol = value;
-    console.log('chartSymbol: ', this.chartSymbol);
+  getPriceHistory() {
+    this.http.get('https://api.tdameritrade.com/v1/marketdata/' + this.chartSymbol + '/pricehistory?apikey=TVBC6SZELQI8G6VCCSMA3IWYVQKDZRYV&periodType=day&period=1&frequencyType=minute&frequency=10').subscribe(res => {
+      // console.log('PriceHistory: ',res);
+      this.candles = res['candles'];
+      // console.log('candles: ',this.candles);
+      var dataElements: dataElement[] = [];
 
-    return this.chartSymbol;
+      for (let value of this.candles) {
+        var de: dataElement = {x:new Date(value.datetime),y:[value.open, value.high, value.low, value.close]};
+        dataElements.push(de);
+      }
+
+      var temp = [];
+      temp.push({name: 'candle', data: dataElements});
+      this.chartOptions.series = temp;
+      console.log('Series', this.chartOptions.series);
+      
+    });
+  }
+
+  getQuote() {
+    this.http.get('https://api.tdameritrade.com/v1/marketdata/' + this.chartSymbol + '/quotes?apikey=TVBC6SZELQI8G6VCCSMA3IWYVQKDZRYV').subscribe(res => {
+      console.log('Quote: ',res);
+      this.quote = res[this.chartSymbol];
+      console.log('Symbolllll: ',this.quote);
+    });
   }
 
   ngOnInit() {
+    this.getPriceHistory() ;
+    /* interval(5000)
+      .pipe(
+        startWith(0),
+        switchMap(() => this.http.get('https://api.tdameritrade.com/v1/marketdata/' + this.chartSymbol + '/quotes?apikey=TVBC6SZELQI8G6VCCSMA3IWYVQKDZRYV'))
+      )
+      .subscribe(res => {
+        console.log('Quote: ',res);
+        this.quote = res[this.chartSymbol];
+        console.log('Symbol: ',this.quote);
+      })
+    ; */
+    
   }
 
 }

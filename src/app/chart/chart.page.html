@@ -2,9 +2,10 @@
 
 <ion-card>
   <!-- Segment buttons with text -->
-  <ion-segment [(ngModel)]="chartSymbol" color="secondary">
+  <ion-segment [(ngModel)]="chartSymbol" color="secondary" (ionChange)="getQuote()">
     <ion-segment-button value="XLK" >
       XLK
+      
     </ion-segment-button>
     <ion-segment-button value="SPY" >
       SPY
@@ -16,7 +17,9 @@
 
 <ion-card>
   <ion-card-header>
-    {{chartSymbol}}
+    <ion-text color="primary">{{chartSymbol}}</ion-text>
+    &nbsp;
+    <ion-text color="dark">{{quote.lastPrice}}</ion-text>
   </ion-card-header>
   <ion-card-content>
     <div id="chart">

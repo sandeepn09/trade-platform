@@ -9,6 +9,9 @@ import { ChartPageRoutingModule } from './chart-routing.module';
 import { NgApexchartsModule } from "ng-apexcharts";
 
 import { ChartPage } from './chart.page';
+import {HttpClientModule} from '@angular/common/http';
+import {Observable} from "rxjs/internal/Observable";
+
 
 @NgModule({
   imports: [
@@ -16,6 +19,8 @@ import { ChartPage } from './chart.page';
     FormsModule,
     IonicModule,
     NgApexchartsModule,
+    HttpClientModule,
+    Observable,
     ChartPageRoutingModule
   ],
   declarations: [ChartPage]
