@@ -38,17 +38,19 @@ export class ChartPage implements OnInit {
   @ViewChild("chart") chart: ChartComponent;
   public chartOptions: Partial<ChartOptions>;
   public chartSymbol = 'AAPL';
-  public quote = {lastPrice:''};
+  public quote = {lastPrice:'', regularMarketNetChange: 0};
+  startDate = new Date().setHours(9, 30, 0);
+  endDate = new Date().setHours(16, 30, 0);
+  quoteColor = 'dark';
   
   
   candles: candle[];
 
   constructor(private http: HttpClient) {
-    this.chartSymbol = 'AAPL';
     this.chartOptions = {
       series: [
         {
-          name: "candle",
+          name: "line",
           data: [
             /* {
               x: new Date(1538778600000),
@@ -298,7 +300,7 @@ export class ChartPage implements OnInit {
         type: "candlestick"
       },
       title: {
-        text: "CandleStick Chart - Category X-axis",
+        text: this.chartSymbol,
         align: "left"
       },
       tooltip: {
@@ -335,7 +337,8 @@ export class ChartPage implements OnInit {
   }
 
   getPriceHistory() {
-    this.http.get('https://api.tdameritrade.com/v1/marketdata/' + this.chartSymbol + '/pricehistory?apikey=TVBC6SZELQI8G6VCCSMA3IWYVQKDZRYV&periodType=day&period=1&frequencyType=minute&frequency=10').subscribe(res => {
+    let range = 'startDate='+this.startDate+'&endDate='+this.endDate+'&needExtendedHoursData=false';
+    this.http.get('https://api.tdameritrade.com/v1/marketdata/' + this.chartSymbol + '/pricehistory?apikey=TVBC6SZELQI8G6VCCSMA3IWYVQKDZRYV&periodType=day&'+range+'&frequencyType=minute&frequency=5').subscribe(res => {
       // console.log('PriceHistory: ',res);
       this.candles = res['candles'];
       // console.log('candles: ',this.candles);
@@ -358,11 +361,24 @@ export class ChartPage implements OnInit {
     this.http.get('https://api.tdameritrade.com/v1/marketdata/' + this.chartSymbol + '/quotes?apikey=TVBC6SZELQI8G6VCCSMA3IWYVQKDZRYV').subscribe(res => {
       console.log('Quote: ',res);
       this.quote = res[this.chartSymbol];
-      console.log('Symbolllll: ',this.quote);
+      console.log('chartSymbol: ',this.quote.regularMarketNetChange);
+
+      this.chartOptions.title.text = this.chartSymbol;
+      console.log('Chart Title', this.chartOptions.title.text);
+
+      if(this.quote.regularMarketNetChange > 0) {
+        this.quoteColor = 'success';
+      } else if(this.quote.regularMarketNetChange < 0) {
+        this.quoteColor = 'danger';
+      }
+
+      console.log('quoteColor: ',this.quoteColor);
     });
+
   }
 
   ngOnInit() {
+    this.getQuote();
     this.getPriceHistory() ;
     /* interval(5000)
       .pipe(
@@ -374,7 +390,7 @@ export class ChartPage implements OnInit {
         this.quote = res[this.chartSymbol];
         console.log('Symbol: ',this.quote);
       })
-    ; */
+    ;  */
     
   }
 
